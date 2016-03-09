@@ -1,3 +1,7 @@
 {
-  "progress_bar_len": 20
+  "progress_bar_len": 20,
+  "electrical":{
+    "arrowscale":0.1,
+    "density":2.5
+  }
 }

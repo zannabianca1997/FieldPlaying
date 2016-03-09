@@ -36,9 +36,6 @@ int_D_X_matrix, int_D_Y_matrix, int_D_matrix = sqr_dist_matrix(*data_shape) #squ
 sqr_D_matrix = int_D_matrix * (scene.graph_setup.prec**2) #distance squared
 D_matrix = np.sqrt(int_D_matrix) * scene.graph_setup.prec #distance, i multiply here for precision sake
 
-D_X_matrix = int_D_X_matrix * scene.graph_setup.prec
-D_Y_matrix = int_D_Y_matrix * scene.graph_setup.prec
-
 
 print("    Preinverting and multiplying by k...")
 k = 1/(4*np.pi*8.86e-12)
@@ -47,6 +44,10 @@ P_matrix = k / D_matrix     #electric potential
 print("    Erasing infinite center value...")
 E_matrix[data_shape] = 0
 P_matrix[data_shape] = 0
+print("    Calculating vector components")
+E_X_matrix = np.nan_to_num(E_matrix * (int_D_X_matrix * scene.graph_setup.prec / D_matrix) )
+E_Y_matrix = np.nan_to_num(E_matrix * (int_D_Y_matrix * scene.graph_setup.prec / D_matrix) )
+
 
 print("    Creating slicing arrays...")
 #slices array
@@ -62,15 +63,14 @@ matrices = [ #per tutte le linee
             ]
 #precalcolo di ogni matrice
 
-E_X_factor_index,E_Y_factor_index,E_factor_index,P_factor_index = 0,1,2,3
+EX_factor_index,EY_factor_index,P_factor_index = 0,1,2
 
 matrices = [ #per tutte le linee
                 [ # e per turre le colonne
                     ( #crea una tupla con dentro
-                        D_matrix[matrices[x][y]] / D_X_matrix[matrices[x][y]], #0: distance from cell in X axis
-                        D_matrix[matrices[x][y]] / D_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
-                        E_matrix[matrices[x][y]],                              #2: electrical field factor
-                        P_matrix[matrices[x][y]]                               #3: electrical potential factor
+                        E_X_matrix[matrices[x][y]], #0: distance from cell in X axis
+                        E_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
+                        P_matrix[matrices[x][y]]    #2: electrical potential factor
                     )
                 for y in range(data_shape[1])
                 ]
@@ -89,9 +89,8 @@ print("Calculating electrical field ", end="") #not creating newline
 count = 0
 for ix in range(data_shape[0]):
     for iy in range(data_shape[1]):
-        E = matrices[ix][iy][E_factor_index] * Charge[ix,iy] #Electrical field of this cell
-        E_x += E * matrices[ix][iy][E_X_factor_index]
-        E_y += E * matrices[ix][iy][E_Y_factor_index]
+        E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
+        E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
         count += 1
         if count%steps == 0:
             print(".",end="")
@@ -117,7 +116,13 @@ plotly.offline.plot(plotly.graph_objs.Data([
                            ),
                            colorbar=dict(
                                 ticksuffix = "C/m^2"
-                            ))]), filename='TestChargeFile.html')
+                            ))]), filename='ChargeField.html')
+plotly.offline.plot(plotly.tools.FigureFactory.create_streamline(
+                        x,y,E_x,E_y,
+                        arrow_scale=setup["electrical"]["arrowscale"],
+                        density = setup["electrical"]["density"],
+                        name="Electrical field"
+                    ), filename="ElectricField.html")
 plotly.offline.plot(plotly.graph_objs.Data([
     plotly.graph_objs.Contour(x=x, y=y, z=P,
                            contours=dict(
@@ -125,7 +130,7 @@ plotly.offline.plot(plotly.graph_objs.Data([
                            ),
                            colorbar=dict(
                                 ticksuffix = "V"
-                            ))]), filename='TestPotentialFile.html')
+                            ))]), filename='PotentialField.html')
 
 
 
