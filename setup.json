@@ -1,7 +1,11 @@
 {
   "progress_bar_len": 20,
-  "electrical":{
+  "field":{
+    "calculate":false,
     "arrowscale":0.1,
     "density":2.5
+  },
+  "potential":{
+    "calculate":true
   }
 }

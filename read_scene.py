@@ -23,7 +23,14 @@ class vect_interpreter:
         dists_sqr = (X - center[0]) ** 2 + (Y - center[1]) ** 2 #all this are matrices
         return dists_sqr < (data["radius"]**2) # here is the circle
 
-    __shapes_types = {"circle": paint_circle}
+    def paint_ring(X, Y, data, graphdata):
+        center = data["center"]
+        radius = data["radius"]
+        thickness = data["thickness"]
+        dists = np.abs(np.sqrt((X - center[0]) ** 2 + (Y - center[1]) ** 2) - radius) #all this are matrices
+        return dists < thickness # here is the ring
+
+    __shapes_types = {"circle": paint_circle, "ring": paint_ring}
 
     def paint_uniform(X, Y, new_field, data, graphdata):
         if "total" in data: #se ha specificato il totale

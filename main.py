@@ -54,8 +54,8 @@ print("    Creating slicing arrays...")
 matrices = [ #per tutte le linee
                 [ # e per turre le colonne
                     ( #crea una tupla con dentro
-                        slice(x, x + data_shape[0]),
-                        slice(y, y + data_shape[1])
+                        slice(data_shape[0] - x, 2*data_shape[0] - x),
+                        slice(data_shape[1] - y, 2*data_shape[1] - y)
                     )
                 for y in range(data_shape[1])
                 ]
@@ -85,30 +85,33 @@ P = np.zeros(data_shape)
 #needed for progress bars
 steps = cellnum // setup["progress_bar_len"]
 
-print("Calculating electrical field ", end="") #not creating newline
-count = 0
-for ix in range(data_shape[0]):
-    for iy in range(data_shape[1]):
-        E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
-        E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
-        count += 1
-        if count%steps == 0:
-            print(".",end="")
-print(" Done!")
+if setup["field"]["calculate"]:
+    print("Calculating electrical field ", end="") #not creating newline
+    count = 0
+    for ix in range(data_shape[0]):
+        for iy in range(data_shape[1]):
+            E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
+            E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
+            count += 1
+            if count%steps == 0:
+                print(".",end="")
+    print(" Done!")
 
-print("Calculating potential ", end="") #not creating newline
-count = 0
-for ix in range(data_shape[0]):
-    for iy in range(data_shape[1]):
-        P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
-        count += 1
-        if count%steps == 0:
-            print(".",end="")
-print(" Done!")
+if setup["potential"]["calculate"]:
+    print("Calculating potential ", end="") #not creating newline
+    count = 0
+    for ix in range(data_shape[0]):
+        for iy in range(data_shape[1]):
+            P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
+            count += 1
+            if count%steps == 0:
+                print(".",end="")
+    print(" Done!")
 
 
 print("Showing off my result...")
 import plotly
+print("Total charge: {}".format(np.sum(Charge)))
 plotly.offline.plot(plotly.graph_objs.Data([
     plotly.graph_objs.Contour(x=x, y=y, z=(Charge / (scene.graph_setup.prec**2)),
                            contours=dict(
@@ -117,14 +120,17 @@ plotly.offline.plot(plotly.graph_objs.Data([
                            colorbar=dict(
                                 ticksuffix = "C/m^2"
                             ))]), filename='ChargeField.html')
-plotly.offline.plot(plotly.tools.FigureFactory.create_streamline(
+if setup["field"]["calculate"]:
+    plotly.offline.plot(plotly.tools.FigureFactory.create_streamline(
                         x,y,E_x,E_y,
-                        arrow_scale=setup["electrical"]["arrowscale"],
-                        density = setup["electrical"]["density"],
+                        arrow_scale=setup["field"]["arrowscale"],
+                        density = setup["field"]["density"],
                         name="Electrical field"
                     ), filename="ElectricField.html")
-plotly.offline.plot(plotly.graph_objs.Data([
-    plotly.graph_objs.Contour(x=x, y=y, z=P,
+
+if setup["potential"]["calculate"]:
+    plotly.offline.plot(plotly.graph_objs.Data([
+        plotly.graph_objs.Contour(x=x, y=y, z=P,
                            contours=dict(
                                 coloring='heatmap'
                            ),
