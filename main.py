@@ -38,8 +38,8 @@ k = 1/(4*np.pi*8.86e-12)
 E_matrix = k / sqr_D_matrix #electric field
 P_matrix = k / D_matrix     #electric potential
 print("    Erasing infinite center value...")
-E_matrix = np.nan_to_num(E_matrix)
-P_matrix = np.nan_to_num(P_matrix)
+E_matrix[data_shape] = 0
+P_matrix[data_shape] = 0
 
 print("    Creating slicing arrays...")
 #slices array
@@ -85,12 +85,12 @@ print(" Done!")
 print("Showing off my result...")
 import plotly
 plotly.offline.plot(plotly.graph_objs.Data([
-    plotly.graph_objs.Contour(x=x, y=y, z=(P),
+    plotly.graph_objs.Contour(x=x, y=y, z=P,
                            contours=dict(
                                 coloring='heatmap'
                            ),
                            colorbar=dict(
-                                ticksuffix = "C"
+                                ticksuffix = "V"
                             ))]), filename='TestFile.html')
 
 

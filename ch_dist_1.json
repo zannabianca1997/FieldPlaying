@@ -1,10 +1,10 @@
 {
   "graphdata": {
-    "xmin": -2.5,
-    "xmax": 2,
-    "ymin": -1.5,
+    "xmin": -3,
+    "xmax": 3,
+    "ymin": -3,
     "ymax": 3,
-    "prec": 0.03
+    "prec": 0.02
   },
   "charges": {
     "type": "vectorial",
@@ -12,23 +12,23 @@
       {
         "shape": {
           "type": "circle",
-          "center": [0,0],
-          "radius": 1
+          "center": [-1,0],
+          "radius": 0.5
         },
         "charge": {
           "type": "uniform",
-          "density": 1
+          "total": 0.00000001
         }
       },
       {
         "shape": {
           "type": "circle",
-          "center": [0,1],
-          "radius": 1
+          "center": [1,0],
+          "radius": 0.5
         },
         "charge": {
           "type": "uniform",
-          "total": 1
+          "total": 0.00000001
         }
       }
     ]
