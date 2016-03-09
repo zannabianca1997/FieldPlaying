@@ -19,18 +19,25 @@ print("Data shape setted to {}, simulating {} cells".format(data_shape, cellnum)
 print("Creating scene...")
 Charge = scene.paint(X, Y)
 
-print("Creating distance matrix...")
+print("Creating distance matrices...")
 
 def sqr_dist_matrix(dimx, dimy):
     x = np.arange(-dimx, dimx + 1) #+1 is for safety.. i doubt its usefullness
     y = np.arange(-dimy, dimy + 1)
     X, Y = np.meshgrid(x, y)
-    return X ** 2 + Y ** 2
+    return (X, Y, X ** 2 + Y ** 2)
+
+# L'idea è: calcoliamo tutto, poi transliamo di ciò che ci serve
+
 
 print("    Creating duble base distance matrices...")
-int_D_matrix = sqr_dist_matrix(*data_shape) #squared int distance, D_matrix[datashape] is 0
+int_D_X_matrix, int_D_Y_matrix, int_D_matrix = sqr_dist_matrix(*data_shape) #squared int distance, D_matrix[datashape] is 0
+
 sqr_D_matrix = int_D_matrix * (scene.graph_setup.prec**2) #distance squared
 D_matrix = np.sqrt(int_D_matrix) * scene.graph_setup.prec #distance, i multiply here for precision sake
+
+D_X_matrix = int_D_X_matrix * scene.graph_setup.prec
+D_Y_matrix = int_D_Y_matrix * scene.graph_setup.prec
 
 
 print("    Preinverting and multiplying by k...")
@@ -54,11 +61,16 @@ matrices = [ #per tutte le linee
             for x in range(data_shape[0])
             ]
 #precalcolo di ogni matrice
+
+E_X_factor_index,E_Y_factor_index,E_factor_index,P_factor_index = 0,1,2,3
+
 matrices = [ #per tutte le linee
                 [ # e per turre le colonne
                     ( #crea una tupla con dentro
-                        E_matrix[matrices[x][y]],
-                        P_matrix[matrices[x][y]]
+                        D_matrix[matrices[x][y]] / D_X_matrix[matrices[x][y]], #0: distance from cell in X axis
+                        D_matrix[matrices[x][y]] / D_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
+                        E_matrix[matrices[x][y]],                              #2: electrical field factor
+                        P_matrix[matrices[x][y]]                               #3: electrical potential factor
                     )
                 for y in range(data_shape[1])
                 ]
@@ -70,12 +82,26 @@ E_x = np.zeros(data_shape)
 E_y = np.zeros(data_shape) #all separate
 P = np.zeros(data_shape)
 
-print("Calculating potential ", end="") #not creating newline
+#needed for progress bars
 steps = cellnum // setup["progress_bar_len"]
+
+print("Calculating electrical field ", end="") #not creating newline
 count = 0
 for ix in range(data_shape[0]):
     for iy in range(data_shape[1]):
-        P += matrices[ix][iy][1] * Charge[ix,iy]
+        E = matrices[ix][iy][E_factor_index] * Charge[ix,iy] #Electrical field of this cell
+        E_x += E * matrices[ix][iy][E_X_factor_index]
+        E_y += E * matrices[ix][iy][E_Y_factor_index]
+        count += 1
+        if count%steps == 0:
+            print(".",end="")
+print(" Done!")
+
+print("Calculating potential ", end="") #not creating newline
+count = 0
+for ix in range(data_shape[0]):
+    for iy in range(data_shape[1]):
+        P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
         count += 1
         if count%steps == 0:
             print(".",end="")
@@ -85,13 +111,21 @@ print(" Done!")
 print("Showing off my result...")
 import plotly
 plotly.offline.plot(plotly.graph_objs.Data([
+    plotly.graph_objs.Contour(x=x, y=y, z=(Charge / (scene.graph_setup.prec**2)),
+                           contours=dict(
+                                coloring='heatmap'
+                           ),
+                           colorbar=dict(
+                                ticksuffix = "C/m^2"
+                            ))]), filename='TestChargeFile.html')
+plotly.offline.plot(plotly.graph_objs.Data([
     plotly.graph_objs.Contour(x=x, y=y, z=P,
                            contours=dict(
                                 coloring='heatmap'
                            ),
                            colorbar=dict(
                                 ticksuffix = "V"
-                            ))]), filename='TestFile.html')
+                            ))]), filename='TestPotentialFile.html')
 
 
 

@@ -17,13 +17,35 @@
         },
         "charge": {
           "type": "uniform",
-          "total": 0.00000001
+          "total": -0.00000001
         }
       },
       {
         "shape": {
           "type": "circle",
           "center": [1,0],
+          "radius": 0.5
+        },
+        "charge": {
+          "type": "uniform",
+          "total": -0.00000001
+        }
+      },
+      {
+        "shape": {
+          "type": "circle",
+          "center": [0,-1],
+          "radius": 0.5
+        },
+        "charge": {
+          "type": "uniform",
+          "total": 0.00000001
+        }
+      },
+      {
+        "shape": {
+          "type": "circle",
+          "center": [0,1],
           "radius": 0.5
         },
         "charge": {
