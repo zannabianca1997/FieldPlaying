@@ -34,11 +34,11 @@ def dist_matrix(dimx, dimy):
 D_matrix = dist_matrix(*data_shape) * scene.graph_setup.prec #distance, cell [datashape] is 0
 
 def blit(dest, src, loc): #blit function
-    pos = [i if i >= 0 else None for i in loc]
-    neg = [-i if i < 0 else None for i in loc]
-    target = dest[[slice(i,None) for i in pos]]
-    src = src[[slice(i, j) for i,j in zip(neg, target.shape)]]
-    target[[slice(None, i) for i in src.shape]] = src
+    pos = [i if i >= 0 else None for i in loc] #valori positivi
+    neg = [-i if i < 0 else None for i in loc] #valori negativi
+    target = dest[[slice(i,None) for i in pos]]  #prende la parte in cui copiare, tagliando dai positivi in su
+    src = src[[slice(i, j) for i,j in zip(neg, target.shape)]]  #taglia solo la parte da copiare
+    target[[slice(None, i) for i in src.shape]] = src #copia quella parte
     return dest
 
 import plotly
