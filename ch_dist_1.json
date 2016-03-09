@@ -1,8 +1,8 @@
 {
   "graphdata": {
-    "xmin": -3,
-    "xmax": 3,
-    "ymin": -3,
+    "xmin": -2.5,
+    "xmax": 2,
+    "ymin": -1.5,
     "ymax": 3,
     "prec": 0.03
   },
