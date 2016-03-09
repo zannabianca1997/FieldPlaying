@@ -1,8 +1,10 @@
-from read_scene import read_scene
-
 print("Loading setups...")
-#eventual general setups
+import json
+with open("setup.json") as f:
+        setup = json.loads(f.read())
+
 print("Loading scene...")
+from read_scene import read_scene
 scene = read_scene("ch_dist_1.json")
 
 import numpy as np
@@ -68,10 +70,16 @@ E_x = np.zeros(data_shape)
 E_y = np.zeros(data_shape) #all separate
 P = np.zeros(data_shape)
 
-print("Calculating potential...")
+print("Calculating potential ", end="") #not creating newline
+steps = cellnum // setup["progress_bar_len"]
+count = 0
 for ix in range(data_shape[0]):
     for iy in range(data_shape[1]):
         P += matrices[ix][iy][1] * Charge[ix,iy]
+        count += 1
+        if count%steps == 0:
+            print(".",end="")
+print(" Done!")
 
 
 print("Showing off my result...")
