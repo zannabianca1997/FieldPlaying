@@ -24,14 +24,14 @@ P = np.zeros(data_shape)
 print("Creating distance matrix...")
 
 
-def dist_matrix(dimx, dimy):
+def sqr_dist_matrix(dimx, dimy):
     print("    Creating duble base coordinate matrix...")
-    x = np.arange(-dimx, dimx + 1)
+    x = np.arange(-dimx, dimx + 1) #+1 is for safety.. i doubt its usefullness
     y = np.arange(-dimy, dimy + 1)
     X, Y = np.meshgrid(x, y)
-    return np.sqrt(X ** 2 + Y ** 2)
+    return X ** 2 + Y ** 2
 
-D_matrix = dist_matrix(*data_shape) * scene.graph_setup.prec #distance, cell [datashape] is 0
+inv_sqr_D_matrix = 1/(sqr_dist_matrix(*data_shape) * (scene.graph_setup.prec**2)) #distance, cell [datashape] is 0
 
 def blit(dest, src, loc): #blit function
     pos = [i if i >= 0 else None for i in loc] #valori positivi
