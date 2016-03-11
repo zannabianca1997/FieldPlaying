@@ -18,6 +18,7 @@ print("Data shape setted to {}, simulating {} cells".format(data_shape, cellnum)
 
 print("Creating scene...")
 Charge = scene.paint(X, Y)
+print("Total charge: {}".format(np.sum(Charge)))
 
 print("Creating distance matrices...")
 
@@ -90,8 +91,9 @@ if setup["field"]["calculate"]:
     count = 0
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
-            E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
-            E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
+            if Charge[ix,iy] != 0:
+                E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
+                E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
             count += 1
             if count%steps == 0:
                 print(".",end="")
@@ -102,16 +104,20 @@ if setup["potential"]["calculate"]:
     count = 0
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
-            P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
+            if Charge[ix,iy] != 0:
+                P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
             count += 1
             if count%steps == 0:
                 print(".",end="")
     print(" Done!")
 
+print("Removing Nan values...")
+E_x = np.nan_to_num(E_x)
+E_y = np.nan_to_num(E_y)
+P = np.nan_to_num(P)
 
 print("Showing off my result...")
 import plotly
-print("Total charge: {}".format(np.sum(Charge)))
 plotly.offline.plot(plotly.graph_objs.Data([
     plotly.graph_objs.Contour(x=x, y=y, z=(Charge / (scene.graph_setup.prec**2)),
                            contours=dict(
@@ -121,12 +127,20 @@ plotly.offline.plot(plotly.graph_objs.Data([
                                 ticksuffix = "C/m^2"
                             ))]), filename='ChargeField.html')
 if setup["field"]["calculate"]:
-    plotly.offline.plot(plotly.tools.FigureFactory.create_streamline(
+    fig = plotly.tools.FigureFactory.create_streamline(
                         x,y,E_x,E_y,
                         arrow_scale=setup["field"]["arrowscale"],
                         density = setup["field"]["density"],
                         name="Electrical field"
-                    ), filename="ElectricField.html")
+                    )
+    fig["data"].append(plotly.graph_objs.Contour(x=x, y=y, z=np.sqrt(E_x ** 2 + E_y ** 2),
+                           contours=dict(
+                                coloring='heatmap'
+                           ),
+                           colorbar=dict(
+                                ticksuffix = "N/C"
+                            )))
+    plotly.offline.plot(fig, filename="ElectricField.html")
 
 if setup["potential"]["calculate"]:
     plotly.offline.plot(plotly.graph_objs.Data([

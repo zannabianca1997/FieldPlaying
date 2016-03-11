@@ -1,7 +1,7 @@
 {
   "progress_bar_len": 20,
   "field":{
-    "calculate":false,
+    "calculate":true,
     "arrowscale":0.1,
     "density":2.5
   },
