@@ -52,7 +52,7 @@ E_Y_matrix = np.nan_to_num(E_matrix * (int_D_Y_matrix * scene.graph_setup.prec /
 
 print("    Creating slicing arrays...")
 #slices array
-matrices = [ #per tutte le linee
+slices_array = [ #per tutte le linee
                 [ # e per turre le colonne
                     ( #crea una tupla con dentro
                         slice(data_shape[0] - x, 2*data_shape[0] - x),
@@ -64,19 +64,13 @@ matrices = [ #per tutte le linee
             ]
 #precalcolo di ogni matrice
 
-EX_factor_index,EY_factor_index,P_factor_index = 0,1,2
+#EX_factor_index,EY_factor_index,P_factor_index = 0,1,2
 
-matrices = [ #per tutte le linee
-                [ # e per turre le colonne
-                    ( #crea una tupla con dentro
-                        E_X_matrix[matrices[x][y]], #0: distance from cell in X axis
-                        E_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
-                        P_matrix[matrices[x][y]]    #2: electrical potential factor
-                    )
-                for y in range(data_shape[1])
-                ]
-            for x in range(data_shape[0])
-            ]
+        #            ( #crea una tupla con dentro
+         #               E_X_matrix[matrices[x][y]], #0: distance from cell in X axis
+          #              E_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
+           #             P_matrix[matrices[x][y]]    #2: electrical potential factor
+            #        )
 
 print("Creating starting zero fields...")
 E_x = np.zeros(data_shape)
@@ -92,8 +86,8 @@ if setup["field"]["calculate"]:
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
             if Charge[ix,iy] != 0:
-                E_x += matrices[ix][iy][EX_factor_index] * Charge[ix,iy] #Electrical field of this cell
-                E_y += matrices[ix][iy][EY_factor_index] * Charge[ix,iy]
+                E_x += E_X_matrix[slices_array[ix][iy]] * Charge[ix,iy] #Electrical field of this cell
+                E_y += E_Y_matrix[slices_array[ix][iy]] * Charge[ix,iy]
             count += 1
             if count%steps == 0:
                 print(".",end="")
@@ -105,7 +99,7 @@ if setup["potential"]["calculate"]:
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
             if Charge[ix,iy] != 0:
-                P += matrices[ix][iy][P_factor_index] * Charge[ix,iy] #potential of this cell
+                P += P_matrix[slices_array[ix][iy]] * Charge[ix,iy] #potential of this cell
             count += 1
             if count%steps == 0:
                 print(".",end="")
