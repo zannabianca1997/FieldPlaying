@@ -1,11 +1,11 @@
 print("Loading setups...")
 import json
-with open("setup.json") as f:
+with open("assets/setup.json") as f:
         setup = json.loads(f.read())
 
 print("Loading scene...")
 from read_scene import read_scene
-scene = read_scene("ch_dist_1.json")
+scene = read_scene("scenes/charge_in_ring.json")
 
 import numpy as np
 print("Creating base coordinate matrix...")
@@ -39,7 +39,7 @@ D_X, D_Y, sqr_D, D = sqr_dist_matrix(scene.graph_setup.prec, *data_shape) #squar
 print("    Preinverting and multiplying by k...")
 k = 1/(4*np.pi*8.86e-12)
 E_large = k / D #electric field
-P_large = k / np.sqrt(D)     #electric potential
+P_large = k / sqr_D     #electric potential
 print("    Erasing infinite center value...")
 E_large[data_shape] = 0
 P_large[data_shape] = 0
