@@ -38,8 +38,8 @@ D_X, D_Y, sqr_D, D = sqr_dist_matrix(scene.graph_setup.prec, *data_shape) #squar
 
 print("    Preinverting and multiplying by k...")
 k = 1/(4*np.pi*8.86e-12)
-E_large = k / D #electric field
-P_large = k / D     #electric potential #SBAGLIATO :_(
+E_large = k / sqr_D #electric field
+P_large = k / D     #electric potential
 print("    Erasing infinite center value...")
 E_large[data_shape] = 0
 P_large[data_shape] = 0
