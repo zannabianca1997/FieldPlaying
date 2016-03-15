@@ -22,7 +22,7 @@ print("Total charge: {}".format(np.sum(Charge)))
 
 print("Creating distance matrices...")
 
-def sqr_dist_matrix(dimx, dimy, step):
+def sqr_dist_matrix(step, dimx, dimy):
     x = np.arange(-dimx, dimx + 1) * step #+1 is for safety.. i doubt its usefullness
     y = np.arange(-dimy, dimy + 1) * step
     X, Y = np.meshgrid(x, y)
@@ -33,7 +33,7 @@ def sqr_dist_matrix(dimx, dimy, step):
 
 
 print("    Creating duble base distance matrices...")
-D_X, D_Y, sqr_D, D = sqr_dist_matrix(*data_shape, scene.graph_setup.prec) #squared int distance, D_matrix[datashape] is 0
+D_X, D_Y, sqr_D, D = sqr_dist_matrix(scene.graph_setup.prec, *data_shape) #squared int distance, D_matrix[datashape] is 0
 
 
 print("    Preinverting and multiplying by k...")
