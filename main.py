@@ -22,20 +22,18 @@ print("Total charge: {}".format(np.sum(Charge)))
 
 print("Creating distance matrices...")
 
-def sqr_dist_matrix(dimx, dimy):
-    x = np.arange(-dimx, dimx + 1) #+1 is for safety.. i doubt its usefullness
-    y = np.arange(-dimy, dimy + 1)
+def sqr_dist_matrix(dimx, dimy, step):
+    x = np.arange(-dimx, dimx + 1) * step #+1 is for safety.. i doubt its usefullness
+    y = np.arange(-dimy, dimy + 1) * step
     X, Y = np.meshgrid(x, y)
-    return (X, Y, X ** 2 + Y ** 2)
+    sqr_dists = X ** 2 + Y ** 2
+    return (X, Y, sqr_dists, np.sqrt(sqr_dists))
 
 # L'idea è: calcoliamo tutto, poi transliamo di ciò che ci serve
 
 
 print("    Creating duble base distance matrices...")
-int_D_X_matrix, int_D_Y_matrix, int_D_matrix = sqr_dist_matrix(*data_shape) #squared int distance, D_matrix[datashape] is 0
-
-sqr_D_matrix = int_D_matrix * (scene.graph_setup.prec**2) #distance squared
-D_matrix = np.sqrt(int_D_matrix) * scene.graph_setup.prec #distance, i multiply here for precision sake
+D_X_matrix, D_Y_matrix, sqr_D_matrix, D_matrix = sqr_dist_matrix(*data_shape, scene.graph_setup.prec) #squared int distance, D_matrix[datashape] is 0
 
 
 print("    Preinverting and multiplying by k...")
@@ -46,8 +44,8 @@ print("    Erasing infinite center value...")
 E_matrix[data_shape] = 0
 P_matrix[data_shape] = 0
 print("    Calculating vector components")
-E_X_matrix = np.nan_to_num(E_matrix * (int_D_X_matrix * scene.graph_setup.prec / D_matrix) )
-E_Y_matrix = np.nan_to_num(E_matrix * (int_D_Y_matrix * scene.graph_setup.prec / D_matrix) )
+E_X_matrix = np.nan_to_num(E_matrix * (D_X_matrix / D_matrix) )
+E_Y_matrix = np.nan_to_num(E_matrix * (D_Y_matrix / D_matrix) )
 
 
 print("    Creating slicing arrays...")
@@ -62,15 +60,6 @@ slices_array = [ #per tutte le linee
                 ]
             for x in range(data_shape[0])
             ]
-#precalcolo di ogni matrice
-
-#EX_factor_index,EY_factor_index,P_factor_index = 0,1,2
-
-        #            ( #crea una tupla con dentro
-         #               E_X_matrix[matrices[x][y]], #0: distance from cell in X axis
-          #              E_Y_matrix[matrices[x][y]], #1: distance from cell in Y axis
-           #             P_matrix[matrices[x][y]]    #2: electrical potential factor
-            #        )
 
 print("Creating starting zero fields...")
 E_x = np.zeros(data_shape)
