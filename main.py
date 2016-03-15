@@ -33,19 +33,19 @@ def sqr_dist_matrix(dimx, dimy, step):
 
 
 print("    Creating duble base distance matrices...")
-D_X_matrix, D_Y_matrix, sqr_D_matrix, D_matrix = sqr_dist_matrix(*data_shape, scene.graph_setup.prec) #squared int distance, D_matrix[datashape] is 0
+D_X, D_Y, sqr_D, D = sqr_dist_matrix(*data_shape, scene.graph_setup.prec) #squared int distance, D_matrix[datashape] is 0
 
 
 print("    Preinverting and multiplying by k...")
 k = 1/(4*np.pi*8.86e-12)
-E_matrix = k / sqr_D_matrix #electric field
-P_matrix = k / D_matrix     #electric potential
+E_large = k / D #electric field
+P_large = k / np.sqrt(D)     #electric potential
 print("    Erasing infinite center value...")
-E_matrix[data_shape] = 0
-P_matrix[data_shape] = 0
+E_large[data_shape] = 0
+P_large[data_shape] = 0
 print("    Calculating vector components")
-E_X_matrix = np.nan_to_num(E_matrix * (D_X_matrix / D_matrix) )
-E_Y_matrix = np.nan_to_num(E_matrix * (D_Y_matrix / D_matrix) )
+E_X_large = np.nan_to_num(E_large * (D_X / D) )
+E_Y_large = np.nan_to_num(E_large * (D_Y / D) )
 
 
 print("    Creating slicing arrays...")
@@ -75,8 +75,8 @@ if setup["field"]["calculate"]:
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
             if Charge[ix,iy] != 0:
-                E_x += E_X_matrix[slices_array[ix][iy]] * Charge[ix,iy] #Electrical field of this cell
-                E_y += E_Y_matrix[slices_array[ix][iy]] * Charge[ix,iy]
+                E_x += E_X_large[slices_array[ix][iy]] * Charge[ix,iy] #Electrical field of this cell
+                E_y += E_Y_large[slices_array[ix][iy]] * Charge[ix,iy]
             count += 1
             if count%steps == 0:
                 print(".",end="")
@@ -88,7 +88,7 @@ if setup["potential"]["calculate"]:
     for ix in range(data_shape[0]):
         for iy in range(data_shape[1]):
             if Charge[ix,iy] != 0:
-                P += P_matrix[slices_array[ix][iy]] * Charge[ix,iy] #potential of this cell
+                P += P_large[slices_array[ix][iy]] * Charge[ix,iy] #potential of this cell
             count += 1
             if count%steps == 0:
                 print(".",end="")
