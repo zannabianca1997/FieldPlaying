@@ -1,5 +1,5 @@
 {
-  "scene":"charge_in_ring.json",
+  "scene":"condenser.json",
   "progress_bar_len": 20,
   "electric_field":true,
   "potential":true

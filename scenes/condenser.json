@@ -1,0 +1,40 @@
+{
+  "graphdata": {
+    "xmin": -3,
+    "xmax": 3,
+    "ymin": -3,
+    "ymax": 3,
+    "prec": 0.02
+  },
+  "charges": {
+    "type": "vectorial",
+    "content": [
+      {
+        "shape": {
+          "type": "rect",
+          "xmin": -3,
+          "xmax": 3,
+          "ymin": -3,
+          "ymax": -2
+        },
+        "charge": {
+          "type": "uniform",
+          "total": -0.00000001
+        }
+      },
+      {
+        "shape": {
+          "type": "rect",
+          "xmin": -3,
+          "xmax": 3,
+          "ymin": 2,
+          "ymax": 3
+        },
+        "charge": {
+          "type": "uniform",
+          "total": 0.00000001
+        }
+      }
+    ]
+  }
+}

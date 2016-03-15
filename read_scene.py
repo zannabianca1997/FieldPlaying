@@ -30,7 +30,11 @@ class vect_interpreter:
         dists = np.abs(np.sqrt((X - center[0]) ** 2 + (Y - center[1]) ** 2) - radius) #all this are matrices
         return dists < thickness # here is the ring
 
-    __shapes_types = {"circle": paint_circle, "ring": paint_ring}
+    def paint_rect(X, Y, data, graphdata):
+        return (X < data["xmax"]) * (Y < data["ymax"]) * \
+               (X > data["xmin"]) * (Y > data["ymin"])
+
+    __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect}
 
     def paint_uniform(X, Y, new_field, data, graphdata):
         if "total" in data: #se ha specificato il totale
