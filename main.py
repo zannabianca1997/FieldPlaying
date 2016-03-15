@@ -99,6 +99,9 @@ E_x = np.nan_to_num(E_x)
 E_y = np.nan_to_num(E_y)
 P = np.nan_to_num(P)
 
+print("Calculating electric field module...")
+E = np.sqrt(E_x ** 2 + E_y ** 2)
+
 print("Showing off my result...")
 import plotly
 plotly.offline.plot(plotly.graph_objs.Data([
@@ -116,7 +119,7 @@ if setup["field"]["calculate"]:
                         density = setup["field"]["density"],
                         name="Electrical field"
                     )
-    fig["data"].append(plotly.graph_objs.Contour(x=x, y=y, z=np.sqrt(E_x ** 2 + E_y ** 2),
+    fig["data"].append(plotly.graph_objs.Contour(x=x, y=y, z=E,
                            contours=dict(
                                 coloring='heatmap'
                            ),
