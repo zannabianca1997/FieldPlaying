@@ -16,7 +16,10 @@
           "radius": 0.5
         },
         "charge": {
-          "type": "uniform",
+          "type":"shift",
+          "base": {
+            "type": "uniform"
+          },
           "total": 0.00000001
         }
       },
@@ -28,7 +31,10 @@
           "thickness": 0.2
         },
         "charge": {
-          "type": "uniform",
+          "type":"shift",
+          "base": {
+            "type": "uniform"
+          },
           "total": -0.00000001
         }
       }

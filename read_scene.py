@@ -37,15 +37,24 @@ class vect_interpreter:
     __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect}
 
     def paint_uniform(X, Y, new_field, data, graphdata):
-        if "total" in data: #se ha specificato il totale
-            cell_charge = data["total"] / np.sum(new_field) #divide sulle celle della figura
-        elif "density" in data: # se ha specificato la densità
+        if "density" in data: # se ha specificato la densità
             cell_charge = data["density"] * (graphdata.prec ** 2) #densità per area della cella
         else:
-            raise Exception("You must specify total or density for uniform charge")
+            cell_charge = 1 #densità standard... in genere riscalata
         return np.full(new_field.shape, cell_charge) #campo costante
 
-    __charges_fill = {"uniform": paint_uniform}
+    def paint_total(X, Y, new_field, data, graphdata):
+        contained = vect_interpreter.__charges_fill[data["base"]["type"]]\
+                            (X, Y, new_field, data["base"], graphdata) #base charge the shape
+        if "offset" in data: # se ha specificato l'offset
+            offset = data["offset"]   #spostamento per cella
+        else:
+            offset = (data["total"] - np.sum(contained * new_field)) / np.sum(new_field)
+            #calcolo di quanto lo devo spostare (prima applico il gradiente, poi faccio l'offset totale,infine
+            #divido per il numero di celle
+        return contained + offset #spostiamo
+
+    __charges_fill = {"uniform": paint_uniform,"shift":paint_total}
 
     def paint(self, content, graphdata, X, Y):
         field = np.zeros(X.shape)
