@@ -103,6 +103,10 @@ print("Calculating electric field module...")
 E = np.sqrt(E_x ** 2 + E_y ** 2)
 
 print("Showing off my result...")
+import os
+if not os.path.exists("output"):
+    os.mkdir("output")
+
 import plotly
 plotly.offline.plot(plotly.graph_objs.Data([
     plotly.graph_objs.Contour(x=x, y=y, z=(Charge / (scene.graph_setup.prec**2)),
