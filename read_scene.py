@@ -34,7 +34,16 @@ class vect_interpreter:
         return (X < data["xmax"]) * (Y < data["ymax"]) * \
                (X > data["xmin"]) * (Y > data["ymin"])
 
-    __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect}
+    def paint_sum(X, Y, data, graphdata):
+        field = np.zeros(X.shape)
+        for shape in data["content"]:
+            field = np.logical_or( field,
+                vect_interpreter.__shapes_types[shape["type"]](X, Y, shape, graphdata),
+                                   out=field
+            )
+        return field
+
+    __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect, "sum":paint_sum}
 
     def paint_uniform(X, Y, new_field, data, graphdata):
         if "density" in data: # se ha specificato la densità

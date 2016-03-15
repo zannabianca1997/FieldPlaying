@@ -1,5 +1,5 @@
 {
-  "scene":"condenser.json",
+  "scene":"stick.json",
   "progress_bar_len": 20,
   "electric_field":true,
   "potential":true

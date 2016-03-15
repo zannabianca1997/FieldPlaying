@@ -1,0 +1,44 @@
+{
+  "graphdata": {
+    "xmin": -3,
+    "xmax": 3,
+    "ymin": -3,
+    "ymax": 3,
+    "prec": 0.02
+  },
+  "charges": {
+    "type": "vectorial",
+    "content": [
+      {
+        "shape": {
+          "type": "sum",
+          "content": [
+            {
+              "type": "circle",
+              "center": [0, 2],
+              "radius": 0.2
+            },
+            {
+              "type": "circle",
+              "center": [0, -2],
+              "radius": 0.2
+            },
+            {"type":"rect",
+              "xmin": -0.2,
+              "xmax": 0.2,
+              "ymin": -2,
+              "ymax": 2
+            }
+            ]
+        },
+        "charge": {
+          "type": "shift",
+          "base": {
+            "type": "uniform"
+          },
+          "total": 0.00000001
+        }
+      }
+    ]
+  }
+}
