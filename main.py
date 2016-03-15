@@ -111,7 +111,7 @@ plotly.offline.plot(plotly.graph_objs.Data([
                            ),
                            colorbar=dict(
                                 ticksuffix = "C/m^2"
-                            ))]), filename='ChargeField.html')
+                            ))]), filename='output/ChargeField.html')
 if setup["field"]["calculate"]:
     fig = plotly.tools.FigureFactory.create_streamline(
                         x,y,E_x,E_y,
@@ -126,7 +126,7 @@ if setup["field"]["calculate"]:
                            colorbar=dict(
                                 ticksuffix = "N/C"
                             )))
-    plotly.offline.plot(fig, filename="ElectricField.html")
+    plotly.offline.plot(fig, filename="output/ElectricField.html")
 
 if setup["potential"]["calculate"]:
     plotly.offline.plot(plotly.graph_objs.Data([
@@ -136,7 +136,7 @@ if setup["potential"]["calculate"]:
                            ),
                            colorbar=dict(
                                 ticksuffix = "V"
-                            ))]), filename='PotentialField.html')
+                            ))]), filename='output/PotentialField.html')
 
 
 
