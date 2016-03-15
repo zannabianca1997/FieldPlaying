@@ -1,11 +1,11 @@
 print("Loading setups...")
 import json
 with open("assets/setup.json") as f:
-        setup = json.loads(f.read())
+        setup = json.load(f)
 
 print("Loading scene...")
 from read_scene import read_scene
-scene = read_scene("scenes/charge_in_ring.json")
+scene = read_scene("scenes/"+setup["scene"])
 
 import numpy as np
 print("Creating base coordinate matrix...")
@@ -39,7 +39,7 @@ D_X, D_Y, sqr_D, D = sqr_dist_matrix(scene.graph_setup.prec, *data_shape) #squar
 print("    Preinverting and multiplying by k...")
 k = 1/(4*np.pi*8.86e-12)
 E_large = k / D #electric field
-P_large = k / sqr_D     #electric potential
+P_large = k / D     #electric potential #SBAGLIATO :_(
 print("    Erasing infinite center value...")
 E_large[data_shape] = 0
 P_large[data_shape] = 0
@@ -69,7 +69,7 @@ P = np.zeros(data_shape)
 #needed for progress bars
 steps = cellnum // setup["progress_bar_len"]
 
-if setup["field"]["calculate"]:
+if setup["electric_field"]:
     print("Calculating electrical field ", end="") #not creating newline
     count = 0
     for ix in range(data_shape[0]):
@@ -82,7 +82,7 @@ if setup["field"]["calculate"]:
                 print(".",end="")
     print(" Done!")
 
-if setup["potential"]["calculate"]:
+if setup["potential"]:
     print("Calculating potential ", end="") #not creating newline
     count = 0
     for ix in range(data_shape[0]):
@@ -99,48 +99,60 @@ E_x = np.nan_to_num(E_x)
 E_y = np.nan_to_num(E_y)
 P = np.nan_to_num(P)
 
-print("Calculating electric field module...")
+print("Calculating electric field module and charge density...")
 E = np.sqrt(E_x ** 2 + E_y ** 2)
+ChDist = Charge / (scene.graph_setup.prec**2)
+
+print("Creating graphs...")
+import plotly
+
+with open("assets/graph_setups/charge_setup.json") as setup_file:
+    charge_setup = json.load(setup_file)
+
+charge_graph = plotly.graph_objs.Data([
+    plotly.graph_objs.Contour(x=x, y=y, z=ChDist,
+                           **charge_setup
+                              )
+])
+
+if setup["electric_field"]:
+    with open("assets/graph_setups/electric_field_setup.json") as setup_file:
+        electric_field_setup = json.load(setup_file)
+
+    electric_field_graph = plotly.tools.FigureFactory.create_streamline(
+                                x,y,E_x,E_y,
+                                name="Electrical field",
+                                **electric_field_setup["streamline"]
+                           )
+    electric_field_graph["data"].append(plotly.graph_objs.Contour(x=x, y=y, z=E,
+                                            contours=electric_field_setup["contours"],
+                                            colorbar=electric_field_setup["colorbar"])
+                                        )
+
+if setup["potential"]:
+    with open("assets/graph_setups/potential_setup.json") as setup_file:
+        potential_setup = json.load(setup_file)
+
+    potential_graph = plotly.graph_objs.Data([
+        plotly.graph_objs.Contour(x=x, y=y, z=P,
+                               **potential_setup
+                                  )
+    ])
+
+
 
 print("Showing off my result...")
 import os
 if not os.path.exists("output"):
     os.mkdir("output")
 
-import plotly
-plotly.offline.plot(plotly.graph_objs.Data([
-    plotly.graph_objs.Contour(x=x, y=y, z=(Charge / (scene.graph_setup.prec**2)),
-                           contours=dict(
-                                coloring='heatmap'
-                           ),
-                           colorbar=dict(
-                                ticksuffix = "C/m^2"
-                            ))]), filename='output/ChargeField.html')
-if setup["field"]["calculate"]:
-    fig = plotly.tools.FigureFactory.create_streamline(
-                        x,y,E_x,E_y,
-                        arrow_scale=setup["field"]["arrowscale"],
-                        density = setup["field"]["density"],
-                        name="Electrical field"
-                    )
-    fig["data"].append(plotly.graph_objs.Contour(x=x, y=y, z=E,
-                           contours=dict(
-                                coloring='heatmap'
-                           ),
-                           colorbar=dict(
-                                ticksuffix = "N/C"
-                            )))
-    plotly.offline.plot(fig, filename="output/ElectricField.html")
+plotly.offline.plot(charge_graph, filename='output/ChargeField.html')
 
-if setup["potential"]["calculate"]:
-    plotly.offline.plot(plotly.graph_objs.Data([
-        plotly.graph_objs.Contour(x=x, y=y, z=P,
-                           contours=dict(
-                                coloring='heatmap'
-                           ),
-                           colorbar=dict(
-                                ticksuffix = "V"
-                            ))]), filename='output/PotentialField.html')
+if setup["electric_field"]:
+    plotly.offline.plot(electric_field_graph, filename="output/ElectricField.html")
+
+if setup["potential"]:
+    plotly.offline.plot(potential_graph, filename='output/PotentialField.html')
 
 
 

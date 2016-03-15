@@ -1,0 +1,12 @@
+{
+  "streamline":{
+    "arrow_scale":0.1,
+    "density":2.5
+  },
+  "contours": {
+    "coloring": "heatmap"
+  },
+  "colorbar": {
+    "ticksuffix": "N/C"
+  }
+}

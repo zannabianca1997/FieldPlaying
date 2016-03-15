@@ -1,11 +1,6 @@
 {
+  "scene":"charge_in_ring.json",
   "progress_bar_len": 20,
-  "field":{
-    "calculate":true,
-    "arrowscale":0.1,
-    "density":2.5
-  },
-  "potential":{
-    "calculate":true
-  }
+  "electric_field":true,
+  "potential":true
 }

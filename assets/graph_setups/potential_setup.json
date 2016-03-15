@@ -3,6 +3,6 @@
     "coloring": "heatmap"
   },
   "colorbar": {
-    "ticksuffix": "C/m^2"
+    "ticksuffix": "V"
   }
 }
