@@ -1,7 +1,9 @@
 print("Loading setups...")
 import json
+import os
+os.putenv
 with open("assets/setup.json") as f:
-        setup = json.load(f)
+    setup = json.load(f)
 
 print("Loading scene...")
 from read_scene import read_scene
