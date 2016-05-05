@@ -1,0 +1,19 @@
+{
+  "uniform":{
+    "density":1
+  },
+  "shift":{
+    "offset":0,
+    "base": {
+      "type": "void"
+    }
+  },
+  "total":{
+    "method":"shift",
+    "total":0,
+    "base": {
+      "type": "void"
+    }
+  },
+  "void":{}
+}

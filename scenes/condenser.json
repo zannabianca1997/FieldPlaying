@@ -18,7 +18,7 @@
           "ymax": -2
         },
         "charge": {
-          "type":"shift",
+          "type":"total",
           "base": {
             "type": "uniform"
           },
@@ -34,7 +34,7 @@
           "ymax": 3
         },
         "charge": {
-          "type":"shift",
+          "type":"total",
           "base": {
             "type": "uniform"
           },

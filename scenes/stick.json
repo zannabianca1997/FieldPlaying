@@ -23,16 +23,17 @@
               "center": [0, -2],
               "radius": 0.2
             },
-            {"type":"rect",
+            {
+              "type":"rect",
               "xmin": -0.2,
               "xmax": 0.2,
               "ymin": -2,
               "ymax": 2
             }
-            ]
+          ]
         },
         "charge": {
-          "type": "shift",
+          "type": "total",
           "base": {
             "type": "uniform"
           },

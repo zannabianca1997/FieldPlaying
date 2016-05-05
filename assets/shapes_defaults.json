@@ -1,0 +1,20 @@
+{
+  "sum":{
+    "content":[]
+  },
+  "rect":{
+    "xmin":0,
+    "xmax":0,
+    "ymin":0,
+    "ymax":0
+  },
+  "circle":{
+    "center": [0, 0],
+    "radius": 0
+  },
+  "ring":{
+    "center": [0, 0],
+    "radius": 0,
+    "thickness": 0
+  }
+}
