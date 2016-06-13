@@ -18,6 +18,12 @@ class graphdata:
 
 class vect_interpreter:
 
+    # loading defaults value for shapes and charges
+    with open("./assets/shapes_defaults.json") as f:
+        shapes_defaults = json.loads(f.read())
+    with open("./assets/charges_defaults.json") as f:
+        charges_defaults = json.loads(f.read())
+
     def paint_circle(X, Y, data):
         center = data["center"]
         dists_sqr = (X - center[0]) ** 2 + (Y - center[1]) ** 2 #all this are matrices
@@ -43,6 +49,9 @@ class vect_interpreter:
     __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect, "sum":paint_sum}
 
     def __getshape(X, Y, data):
+        for field in vect_interpreter.shapes_defaults[data["type"]]:
+            if not field in data:
+                data[field] = vect_interpreter.shapes_defaults[data["type"]][field]
         return vect_interpreter.__shapes_types[data["type"]](X, Y, data)
 
     def paint_uniform(X, Y, new_field, data, graphdata):
@@ -50,17 +59,15 @@ class vect_interpreter:
         return np.full(new_field.shape, cell_charge) #campo costante
 
     def paint_shift(X, Y, new_field, data, graphdata):
-        contained = vect_interpreter.__charges_fill[data["base"]["type"]]\
-                            (X, Y, new_field, data["base"], graphdata) #base charge the shape
+        contained = vect_interpreter.__getcharge(X, Y, new_field, data["base"], graphdata) #base charge the shape
         offset = data["offset"]   #spostamento per cella
         return contained + offset #spostiamo
 
-    def paint_void(X, Y, new_field, data):
+    def paint_void(X, Y, new_field, data, graphdata):
         return np.zeros(X.shape) #just a blank gradient
 
-    def paint_total(X, Y, new_field, data):
-        contained = vect_interpreter.__charges_fill[data["base"]["type"]]\
-                            (X, Y, new_field, data["base"], graphdata) #base charge the shape
+    def paint_total(X, Y, new_field, data, graphdata):
+        contained = vect_interpreter.__getcharge(X, Y, new_field, data["base"], graphdata) #base charge the shape
         if data["method"] == "shift":
             offset = (data["total"] - np.sum(contained * new_field)) / np.sum(new_field)# si va di spostamento
             return contained + offset #spostiamo
@@ -73,14 +80,17 @@ class vect_interpreter:
             raise Exception("total 'method' must be 'shift' or 'factor'") #TODO:polish graphdata mess
 
     __charges_fill = {"uniform": paint_uniform,"shift":paint_shift,"void":paint_void,"total":paint_total}
-    def __getcharge(X, Y, shape_field, charge):
-        return vect_interpreter.__charges_fill[charge["type"]] (X, Y, shape_field, charge)
+    def __getcharge(X, Y, shape_field, charge, graphdata):
+        for field in vect_interpreter.charges_defaults[charge["type"]]:
+            if not field in charge:
+                charge[field] = vect_interpreter.charges_defaults[charge["type"]][field]
+        return vect_interpreter.__charges_fill[charge["type"]] (X, Y, shape_field, charge, graphdata)
 
     def paint(self, content, graphdata, X, Y):
         field = np.zeros(X.shape)
         for object in content:
             shape_field = vect_interpreter.__getshape(X, Y, object["shape"]) #fill the field with the shape
-            charge_field = vect_interpreter.__getcharge(X, Y, shape_field, object["charge"]) #charge the shape
+            charge_field = vect_interpreter.__getcharge(X, Y, shape_field, object["charge"], graphdata) #charge the shape
             field += shape_field * charge_field
         return field
 
