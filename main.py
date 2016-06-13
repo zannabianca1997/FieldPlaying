@@ -1,9 +1,12 @@
 print("Loading setups...")
 import json
-import os
-os.putenv
 with open("assets/setup.json") as f:
     setup = json.load(f)
+
+print("Benvenuti nel programma di simulazione del campo elettrico")
+
+print("Selezionare la scena dalle scelte seguenti: ")
+
 
 print("Loading scene...")
 from read_scene import read_scene

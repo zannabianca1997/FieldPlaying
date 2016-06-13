@@ -37,10 +37,13 @@ class vect_interpreter:
     def paint_sum(X, Y, data):
         field = np.zeros(X.shape)
         for shape in data["content"]:
-            np.logical_or( field, vect_interpreter.__shapes_types[shape["type"]](X, Y, shape), out=field)
+            np.logical_or( field, vect_interpreter.__getshape(X, Y, shape), out=field)
         return field
 
     __shapes_types = {"circle": paint_circle, "ring": paint_ring, "rect":paint_rect, "sum":paint_sum}
+
+    def __getshape(X, Y, data):
+        return vect_interpreter.__shapes_types[data["type"]](X, Y, data)
 
     def paint_uniform(X, Y, new_field, data, graphdata):
         cell_charge = data["density"] * (graphdata.prec ** 2) #densità per area della cella
@@ -70,16 +73,17 @@ class vect_interpreter:
             raise Exception("total 'method' must be 'shift' or 'factor'") #TODO:polish graphdata mess
 
     __charges_fill = {"uniform": paint_uniform,"shift":paint_shift,"void":paint_void,"total":paint_total}
+    def __getcharge(X, Y, shape_field, charge):
+        return vect_interpreter.__charges_fill[charge["type"]] (X, Y, shape_field, charge)
 
     def paint(self, content, graphdata, X, Y):
         field = np.zeros(X.shape)
         for object in content:
-            shape_field = self.__shapes_types[object["shape"]["type"]](X, Y, object["shape"]) #fill the field with the shape
-            charge_field = self.__charges_fill[object["charge"]["type"]] (X, Y, shape_field, object["charge"]) #charge the shape
+            shape_field = vect_interpreter.__getshape(X, Y, object["shape"]) #fill the field with the shape
+            charge_field = vect_interpreter.__getcharge(X, Y, shape_field, object["charge"]) #charge the shape
             field += shape_field * charge_field
         return field
 
-    def __getshape(self, ):
 
 class charge_field:
     __paint_interpreters = {"vectorial":vect_interpreter}
