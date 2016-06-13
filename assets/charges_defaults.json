@@ -15,5 +15,9 @@
       "type": "void"
     }
   },
-  "void":{}
+  "void":{},
+  "gradient":{
+      "centre": [0,0],
+      "gradient": [0,0]
+  }
 }

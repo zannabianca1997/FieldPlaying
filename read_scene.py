@@ -77,9 +77,12 @@ class vect_interpreter:
             factor = data["total"] / np.sum(contained * new_field)
             return contained * factor #riscaliamo
         else:
-            raise Exception("total 'method' must be 'shift' or 'factor'") #TODO:polish graphdata mess
+            raise Exception("total 'method' must be 'shift' or 'factor'")
 
-    __charges_fill = {"uniform": paint_uniform,"shift":paint_shift,"void":paint_void,"total":paint_total}
+    def paint_gradient(X, Y, new_field, data, graphdata):
+        return (X - data["centre"][0])*data["gradient"][0] + (Y - data["centre"][1])*data["gradient"][1] * (graphdata.prec ** 2)
+
+    __charges_fill = {"uniform": paint_uniform,"shift":paint_shift,"void":paint_void,"total":paint_total,"gradient":paint_gradient}
     def __getcharge(X, Y, shape_field, charge, graphdata):
         for field in vect_interpreter.charges_defaults[charge["type"]]:
             if not field in charge:

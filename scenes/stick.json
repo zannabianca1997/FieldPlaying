@@ -33,11 +33,9 @@
           ]
         },
         "charge": {
-          "type": "total",
-          "base": {
-            "type": "uniform"
-          },
-          "total": 0.00000001
+          "type": "gradient",
+          "centre": [0,0],
+          "gradient": [0,0.0000001]
         }
       }
     ]
