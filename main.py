@@ -3,14 +3,25 @@ import json
 with open("assets/setup.json") as f:
     setup = json.load(f)
 
+def getscenes():
+    from os import listdir
+    from os.path import isfile, join
+    scenepath = "scenes/"
+    return [f for f in listdir(scenepath) if isfile(join(scenepath, f)) and f[-5:] == ".json"]
+
 print("Benvenuti nel programma di simulazione del campo elettrico")
 
-print("Selezionare la scena dalle scelte seguenti: ")
-
+print("Selezionare la scena dalle scelte seguenti: \n")
+i = 0
+scenes_available = getscenes()
+for scenepath in scenes_available:
+    i += 1
+    print("   %i) %s" % (i,scenepath[:-5]))
+selected = int(input("\nEnter a number: "))
 
 print("Loading scene...")
 from read_scene import read_scene
-scene = read_scene("scenes/"+setup["scene"])
+scene = read_scene("scenes/"+scenes_available[selected - 1])
 
 import numpy as np
 print("Creating base coordinate matrix...")
