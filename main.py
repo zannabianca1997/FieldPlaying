@@ -159,16 +159,18 @@ if setup["potential"]:
 
 print("Showing off my result...")
 import os
-if not os.path.exists("output"):
-    os.mkdir("output")
+scene_name = scenes_available[selected - 1][:-5]
+out_path = "output/" + scene_name
+if not os.path.exists(out_path):
+    os.mkdir(out_path)
 
-plotly.offline.plot(charge_graph, filename='output/ChargeField.html')
+plotly.offline.plot(charge_graph, filename=out_path + '/' + scene_name + '_ChargeField.html')
 
 if setup["electric_field"]:
-    plotly.offline.plot(electric_field_graph, filename="output/ElectricField.html")
+    plotly.offline.plot(electric_field_graph, filename=out_path + "/" + scene_name + "_ElectricField.html")
 
 if setup["potential"]:
-    plotly.offline.plot(potential_graph, filename='output/PotentialField.html')
+    plotly.offline.plot(potential_graph, filename=out_path + '/' + scene_name2 + '_PotentialField.html')
 
 
 
